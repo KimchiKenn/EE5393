@@ -1,0 +1,99 @@
+# EE5393 Homework 1 Q1 A
+# Kenji Vang | vang3841@umn.edu
+# ChatGPT has helped generate some code in this file
+
+import random
+
+# -----------------------------
+# Reaction Probabilities Function
+# -----------------------------
+def probabilitiesNumerator(x1, x2, x3):
+   
+    p1 = 0.5 * x1 * (x1 - 1) * x2 
+    p2 = x1 * x3 * (x3 - 1)
+    p3 = 3 * x2 * x3 
+    return p1,p2,p3
+
+
+# -----------------------------
+# Single Simulation Run
+# -----------------------------
+def run_simulation(max_steps=100000):
+    """
+    Runs one stochastic simulation starting from [110, 26, 55].
+    Stops when C1, C2, or C3 is reached.
+    """
+    
+    x1, x2, x3 = 110, 26, 55
+
+    for _ in range(max_steps):
+
+        # ----- Check stopping conditions -----
+        if x1 >= 150:
+            return "C1"
+        if x2 < 10:
+            return "C2"
+        if x3 > 100:
+            return "C3"
+
+        # ----- Compute probabilities -----
+        a1, a2, a3 = probabilitiesNumerator(x1, x2, x3)
+        total = a1 + a2 + a3
+
+        # If no reactions possible, terminate
+        if total == 0:
+            return None
+
+        # ----- Choose which reaction fires -----
+        r = random.random() * total
+
+        if r < a1:
+            # R1: 2X1 + X2 -> 4X3
+            x1 -= 2
+            x2 -= 1
+            x3 += 4
+
+        elif r < a1 + a2:
+            # R2: X1 + 2X3 -> 3X2
+            x1 -= 1
+            x2 += 3
+            x3 -= 2
+
+        else:
+            # R3: X2 + X3 -> 2X1
+            x1 += 2
+            x2 -= 1
+            x3 -= 1
+
+    # If max steps reached without hitting condition
+    return None
+
+
+# -----------------------------
+# Monte Carlo Estimation
+# -----------------------------
+def estimate_probabilities(trials=5000):
+    results = {"C1": 0, "C2": 0, "C3": 0}
+
+    for i in range(trials):
+        outcome = run_simulation()
+        if outcome in results:
+            results[outcome] += 1
+
+    # Convert counts to probabilities
+    for key in results:
+        results[key] /= trials
+
+    return results
+
+
+# -----------------------------
+# Run the Program
+# -----------------------------
+if __name__ == "__main__":
+    trials = 5000
+    probabilities = estimate_probabilities(trials)
+
+    print(f"Results after {trials} simulations:")
+    for outcome, prob in probabilities.items():
+        print(f"Pr({outcome}) ≈ {prob:.4f}")

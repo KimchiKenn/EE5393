@@ -1,3 +1,5 @@
 # EE5393 Homework 1
 
 This folder and its content will content all the new/modifited code for homework 1 due on 02/25/26
+
+HW1 Q2.R required both lambda.in and lambda.r to exist in the same folder to execute correctly.
